@@ -1,0 +1,409 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8" />-->
+<!--    <title>Who Wants To Be A Millionaire</title>-->
+<!--    <script src="https://unpkg.com/vue@3.2.47/dist/vue.global.js"></script>-->
+<!--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            background-color: blueviolet;-->
+<!--        }-->
+<!--        img {-->
+<!--            position: absolute;-->
+<!--            top: 20%;-->
+<!--        }-->
+<!--        h1 {-->
+<!--            font-size: 50px;-->
+<!--            font-style: italic;-->
+<!--        }-->
+<!--        .game-button {-->
+<!--            background-color: darkblue;-->
+<!--            cursor: pointer;-->
+<!--            color: white;-->
+<!--            font-family: Roboto, serif;-->
+<!--            border-color: yellow;-->
+<!--        }-->
+<!--        .answer {-->
+<!--            background-color: darkblue;-->
+<!--            cursor: pointer;-->
+<!--            color: white;-->
+<!--            width: 300px;-->
+<!--            height: 100px;-->
+<!--            font-family: Roboto, serif;-->
+<!--            margin-right: 10px;-->
+<!--            margin-bottom: 10px;-->
+<!--            border-color: yellow;-->
+<!--        }-->
+<!--        #start {-->
+<!--            position: absolute;-->
+<!--            top: 65%;-->
+<!--            font-size: 5vw;-->
+<!--            width: 450px;-->
+<!--            height: 100px;-->
+<!--        }-->
+<!--        #exit, #continue {-->
+<!--            width: 100px;-->
+<!--            height: 50px;-->
+<!--            margin-right: 10px;-->
+<!--            font-size: 1vw;-->
+<!--        }-->
+<!--        button:hover {-->
+<!--            background-color: lightgoldenrodyellow;-->
+<!--            color: black;-->
+<!--        }-->
+<!--        input {-->
+<!--            text-align: center;-->
+<!--            border: none;-->
+<!--            border-bottom: 1px solid white;-->
+<!--            outline: none;-->
+<!--            font-size: 100px;-->
+<!--            background-color: transparent;-->
+<!--            color: white;-->
+<!--        }-->
+<!--        #question {-->
+<!--            background-color: darkblue;-->
+<!--            color: white;-->
+<!--            width: 50%;-->
+<!--            line-height: 100px;-->
+<!--            height: 100px;-->
+<!--            font-family: Roboto, serif;-->
+<!--            border: 3px solid yellow;-->
+<!--            text-align: center;-->
+<!--            margin-top: 100px;-->
+<!--        }-->
+<!--        .exit-next {-->
+<!--            cursor: pointer;-->
+<!--            color: white;-->
+<!--            font-family: Roboto, serif;-->
+<!--            width: 100px;-->
+<!--            height: 30px;-->
+<!--            text-align: center;-->
+<!--            margin-left: 15px;-->
+<!--            margin-right: 15px;-->
+<!--        }-->
+<!--        #display-header {-->
+<!--            position: fixed;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            width: 100%;-->
+<!--            background-color: #333;-->
+<!--            color: #fff;-->
+<!--            padding: 10px;-->
+<!--            box-sizing: border-box;-->
+<!--            font-family: Arial, sans-serif;-->
+<!--            font-size: 16px;-->
+<!--        }-->
+<!--        table {-->
+<!--            border-collapse: collapse;-->
+<!--            width: 100%;-->
+<!--        }-->
+<!--        th, td {-->
+<!--            border: 1px solid black;-->
+<!--            padding: 10px;-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--        th {-->
+<!--            background-color: lightgray;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div id="app">-->
+
+<!--    &lt;!&ndash; Start Game &ndash;&gt;-->
+<!--    <div id="game-prompt" v-show="showStartDiv" style="display: flex; flex-direction: column; align-items: center;">-->
+<!--        <img src="wwtbam.png" id="logo" alt="game-logo">-->
+<!--        <button class="game-button" id="start" @click="startFunction()">Start Game</button>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Enter Name &ndash;&gt;-->
+<!--    <div id="enter-name" v-show="showNameDiv" style="display: flex; flex-direction: column; align-items: center;">-->
+<!--        <h1>{{ greet() }}</h1>-->
+<!--        <p><input type="text" v-model="name"></p>-->
+<!--        <div id="exit-start">-->
+<!--            <button class="game-button" id="exit" @click="toggleStartAndName()">Exit</button>-->
+<!--            <button class="game-button" id="continue" @click="continueFunction">Continue</button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Game Screen &ndash;&gt;-->
+<!--    <div id="game-start" v-show="showGameDiv">-->
+<!--        <div id="display-header" style="display: flex; justify-content: space-between;">-->
+<!--            <h2>{{ name }}</h2>-->
+<!--            <h2>Question {{ i + 1 }}</h2>-->
+<!--            <h2>Worth: ${{ gameData[i].value }}</h2>-->
+<!--            <h2>{{ timer }}s</h2>-->
+<!--            <h2>Earnings: ${{ earnings }}</h2>-->
+<!--        </div>-->
+<!--        <form style="display: flex; flex-direction: column; align-items: center;">-->
+<!--            <p id="question">{{ gameData[i].question }}</p>-->
+<!--            <div style="display: flex; justify-content: center;">-->
+<!--                <button type="button" class="answer" value="0" @click="answerSelection($event)" :disabled="answerDisabled">-->
+<!--                    A: {{ gameData[i].content[0] }}-->
+<!--                </button>-->
+<!--                <button type="button" class="answer" value="1" @click="answerSelection($event)" :disabled="answerDisabled">-->
+<!--                    B: {{ gameData[i].content[1] }}-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            <div style="display: flex; justify-content: center;">-->
+<!--                <button type="button" class="answer" value="2" @click="answerSelection($event)" :disabled="answerDisabled">-->
+<!--                    C: {{ gameData[i].content[2] }}-->
+<!--                </button>-->
+<!--                <button type="button" class="answer" value="3" @click="answerSelection($event)" :disabled="answerDisabled">-->
+<!--                    D: {{ gameData[i].content[3] }}-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            <br>-->
+<!--            <div>-->
+<!--                <button class="exit-next" type="button" style="background-color: red" @click="endGame">End Game</button>-->
+<!--                <button class="exit-next" type="button" style="background-color: green" @click="nextQuestion" :disabled="nextDisabled">Next Question</button>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Final Score &ndash;&gt;-->
+<!--    <div id="final-score" v-show="showFinalDiv" style="display: flex; flex-direction: column; align-items: center;">-->
+<!--        <h1>You Won: ${{ earnings }}</h1>-->
+<!--        <button class="game-button" @click="saveScoreToSupabase">Save Game Data</button>-->
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <th>Rank</th>-->
+<!--                <th>Player</th>-->
+<!--                <th>Correct</th>-->
+<!--                <th>Score</th>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>1</td>-->
+<!--                <td>{{ name }}</td>-->
+<!--                <td>{{ answeredCorrect }}</td>-->
+<!--                <td>{{ earnings }}</td>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </div>-->
+
+<!--</div>-->
+
+<!--&lt;!&ndash; Main Game Logic &ndash;&gt;-->
+<!--<script type="module" src="app.js"></script>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Who Wants To Be A Millionaire</title>
+    <script src="https://unpkg.com/vue@3.2.47/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body{
+            background-color: blueviolet;
+        }
+        img {
+            position: absolute;
+            top: 20%;
+        }
+        h1{
+            font-size: 50px;
+            font-style: italic;
+        }
+        .game-button{
+            background-color: darkblue;
+            cursor: pointer;
+            color: white;
+            font-family: Roboto,serif;
+            border-color: yellow;
+        }
+        .answer{
+            background-color: darkblue;
+            cursor: pointer;
+            color: white;
+            width: 300px;
+            height: 100px;
+            font-family: Roboto,serif;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-color: yellow;
+        }
+        #start{
+            position: absolute;
+            top: 65%;
+            font-size: 5vw;
+            width: 450px;
+            height: 100px;
+        }
+        #exit{
+            width: 100px;
+            height: 50px;
+            margin-right: 10px;
+            font-size: 1vw;
+        }
+        #continue{
+            width: 100px;
+            height: 50px;
+            margin-right: 10px;
+            font-size: 1vw;
+        }
+        button:hover{
+            background-color: lightgoldenrodyellow;
+            color: black;
+        }
+        input{
+            text-align: center;
+            border: none;
+            border-bottom: 1px solid white;
+            outline: none;
+            font-size: 100px;
+            background-color: transparent;
+            color: white;
+        }
+        #question{
+            background-color: darkblue;
+            color: white;
+            width: 50%;
+            line-height: 100px;
+            height: 100px;
+            font-family: Roboto,serif;
+            border: 3px solid yellow;
+            text-align: center;
+            margin-top: 100px;
+        }
+        .exit-next{
+            cursor: pointer;
+            color: white;
+            font-family: Roboto,serif;
+            width: 100px;
+            height: 30px;
+            text-align: center;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+        #display-header{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+
+    <div id = "game-prompt" v-show="showStartDiv" style="display: flex; flex-direction: column; align-items: center;">
+    <img src="wwtbam.png" id= "logo" alt="game-logo">
+    <button class = "game-button" id= "start" @click="startFunction()">Start Game</button>
+    </div>
+
+    <div id = "enter-name" v-show="showNameDiv" style="display: flex; flex-direction: column; align-items: center;">
+        <h1>{{greet()}}</h1>
+        <p><input type="text" v-model="name"></p>
+        <div id="exit-start">
+            <button class = "game-button" id= "exit" @click="toggleStartAndName()">Exit</button>
+            <button class = "game-button" id= "continue" @click="continueFunction">Continue</button>
+        </div>
+    </div>
+
+    <div id= "game-start" v-show="showGameDiv">
+        <div id="display-header" style="display: flex; justify-content: space-between;">
+            <h2>{{name}}</h2>
+            <h2>Question {{i+1}}</h2>
+            <h2>Worth: $ {{gameData[i].value}}</h2>
+            <h2>{{timer}}s</h2>
+            <h2>Earnings: ${{earnings}}</h2>
+        </div>
+        <form style="display: flex; flex-direction: column; align-items: center;">
+            <p id="question">{{gameData[i].question}}</p>
+            <div style="display: flex; flex-direction: row; justify-content: center;">
+                <button type="button" id="option1" class="answer" value="0" v-on:click="answerSelection($event)" v-bind:disabled="answerDisabled">A: {{gameData[i].content[0]}}</button>
+                <button type="button" id="option2" class="answer" value="1" v-on:click="answerSelection($event)" v-bind:disabled="answerDisabled">B: {{gameData[i].content[1]}}</button>
+            </div>
+            <div style="display: flex; flex-direction: row; justify-content: center;">
+                <button type="button" id="option3" class="answer" value="2" v-on:click="answerSelection($event)" v-bind:disabled="answerDisabled">C: {{gameData[i].content[2]}}</button>
+                <button type="button" id="option4" class="answer" value="3" v-on:click="answerSelection($event)" v-bind:disabled="answerDisabled">D: {{gameData[i].content[3]}}</button>
+            </div>
+            <br>
+            <div>
+                <button id= "end" class= "exit-next" type="button" style="background-color: red" v-on:click="endGame">End Game</button>
+                <button id= "next" class= "exit-next" type="button" style="background-color: green" v-on:click="nextQuestion" v-bind:disabled="nextDisabled">Next Question</button>
+            </div>
+        </form>
+    </div>
+
+    <div id= "final-score" v-show="showFinalDiv" style="display: flex; flex-direction: column; align-items: center;">
+        <h1>You Won: ${{earnings}}</h1>
+        <button class = "game-button" id= "addData">Save Game Data</button>
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Correct</th>
+                <th>Score</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>{{name}}</td>
+                <td>{{answeredCorrect}}</td>
+                <td>{{earnings}}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js"></script>
+<script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Simulated values (replace with your dynamic logic)
+    let player = "{{name}}";          // Example: "Ash Ketchum"
+    let correct = "{{answeredCorrect}}"; // Example: 9
+    let score = "{{earnings}}";       // Example: 64000
+
+    const addData = document.getElementById("addData");
+    addData.addEventListener("click", async () => {
+        const { data, error } = await supabase
+            .from("scores")
+            .insert([
+                {
+                    player: player,
+                    correct: parseInt(correct),
+                    score: parseInt(score),
+                },
+            ]);
+
+        if (error) {
+            console.error("Error inserting data:", error.message);
+            alert("Error adding data.");
+        } else {
+            console.log("Data added:", data);
+            alert("Data successfully added to Supabase!");
+        }
+    });
+</script>
+<script src="app.js"></script>
+</body>
+</html>
